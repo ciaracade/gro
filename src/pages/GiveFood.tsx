@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import { createListing, uploadPhoto } from "../lib/api";
 import {
   FOOD_CATEGORIES,
   ACCESSIBILITY_OPTIONS,
@@ -11,16 +13,23 @@ const STEPS = ["What", "Details", "Photo", "When", "Where", "Review"] as const;
 
 export default function GiveFood() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [step, setStep] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<FoodType | null>(
     null,
   );
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [selectedTags, setSelectedTags] = useState<AccessibilityTag[]>([]);
   const [locationName, setLocationName] = useState("");
   const [availableFrom, setAvailableFrom] = useState("");
   const [availableUntil, setAvailableUntil] = useState("");
+  const [posting, setPosting] = useState(false);
+  const [error, setError] = useState("");
 
   const currentStep = STEPS[step];
   const progress = ((step + 1) / STEPS.length) * 100;
@@ -37,7 +46,56 @@ export default function GiveFood() {
 
   function back() {
     if (step > 0) setStep(step - 1);
-    else navigate("/");
+    else navigate("/home");
+  }
+
+  function handlePhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoFile(file);
+    const reader = new FileReader();
+    reader.onload = () => setPhotoPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  }
+
+  async function handlePost() {
+    if (!user || !selectedCategory) return;
+    setPosting(true);
+    setError("");
+
+    let photoUrl: string | undefined;
+
+    // upload photo if selected
+    if (photoFile) {
+      const { url, error: uploadError } = await uploadPhoto(photoFile, user.id);
+      if (uploadError) {
+        setError("Failed to upload photo: " + uploadError.message);
+        setPosting(false);
+        return;
+      }
+      photoUrl = url ?? undefined;
+    }
+
+    const { error: createError } = await createListing({
+      poster_id: user.id,
+      title,
+      description,
+      photo_url: photoUrl,
+      food_type: selectedCategory,
+      location_name: locationName,
+      accessibility_tags: selectedTags,
+      available_from: new Date(availableFrom).toISOString(),
+      available_until: new Date(availableUntil).toISOString(),
+    });
+
+    setPosting(false);
+
+    if (createError) {
+      setError(createError.message);
+      return;
+    }
+
+    navigate("/home");
   }
 
   return (
@@ -53,14 +111,13 @@ export default function GiveFood() {
           </button>
           <h1 className="text-white font-semibold text-lg">Give Food</h1>
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/home")}
             className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center text-white"
           >
             ✕
           </button>
         </div>
 
-        {/* step tabs */}
         <div className="flex gap-1">
           {STEPS.map((s, i) => (
             <button
@@ -79,7 +136,6 @@ export default function GiveFood() {
           ))}
         </div>
 
-        {/* progress bar */}
         <div className="mt-2 h-1 bg-white/20 rounded-full overflow-hidden">
           <div
             className="h-full bg-white rounded-full transition-all duration-300"
@@ -153,7 +209,8 @@ export default function GiveFood() {
             </div>
             <button
               onClick={next}
-              className="w-full bg-teal text-white font-semibold py-3 rounded-xl hover:bg-teal-dark transition-colors"
+              disabled={!title.trim()}
+              className="w-full bg-teal text-white font-semibold py-3 rounded-xl hover:bg-teal-dark transition-colors disabled:opacity-50"
             >
               Continue
             </button>
@@ -166,10 +223,43 @@ export default function GiveFood() {
             <p className="text-sm text-gray-500">
               Help others see what you're sharing.
             </p>
-            <div className="border-2 border-dashed border-gray-300 rounded-2xl p-12 flex flex-col items-center gap-3">
-              <span className="text-4xl">📷</span>
-              <p className="text-sm text-gray-500">Tap to add a photo</p>
-            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handlePhotoSelect}
+              className="hidden"
+            />
+
+            {photoPreview ? (
+              <div className="relative">
+                <img
+                  src={photoPreview}
+                  alt="Food preview"
+                  className="w-full h-48 object-cover rounded-2xl"
+                />
+                <button
+                  onClick={() => {
+                    setPhotoFile(null);
+                    setPhotoPreview(null);
+                  }}
+                  className="absolute top-2 right-2 w-8 h-8 bg-black/50 rounded-full text-white flex items-center justify-center text-sm"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full border-2 border-dashed border-gray-300 rounded-2xl p-12 flex flex-col items-center gap-3"
+              >
+                <span className="text-4xl">📷</span>
+                <p className="text-sm text-gray-500">Tap to add a photo</p>
+              </button>
+            )}
+
             <button
               onClick={next}
               className="w-full bg-teal text-white font-semibold py-3 rounded-xl hover:bg-teal-dark transition-colors"
@@ -211,7 +301,8 @@ export default function GiveFood() {
             </div>
             <button
               onClick={next}
-              className="w-full bg-teal text-white font-semibold py-3 rounded-xl hover:bg-teal-dark transition-colors"
+              disabled={!availableFrom || !availableUntil}
+              className="w-full bg-teal text-white font-semibold py-3 rounded-xl hover:bg-teal-dark transition-colors disabled:opacity-50"
             >
               Continue
             </button>
@@ -255,7 +346,8 @@ export default function GiveFood() {
             </div>
             <button
               onClick={next}
-              className="w-full bg-teal text-white font-semibold py-3 rounded-xl hover:bg-teal-dark transition-colors"
+              disabled={!locationName.trim()}
+              className="w-full bg-teal text-white font-semibold py-3 rounded-xl hover:bg-teal-dark transition-colors disabled:opacity-50"
             >
               Continue
             </button>
@@ -283,6 +375,13 @@ export default function GiveFood() {
                   </p>
                 </div>
               </div>
+              {photoPreview && (
+                <img
+                  src={photoPreview}
+                  alt="Preview"
+                  className="w-full h-32 object-cover rounded-xl"
+                />
+              )}
               {description && (
                 <p className="text-sm text-gray-600">{description}</p>
               )}
@@ -315,14 +414,15 @@ export default function GiveFood() {
                 </p>
               )}
             </div>
+
+            {error && <p className="text-sm text-red-500">{error}</p>}
+
             <button
-              onClick={() => {
-                alert("Listing posted!");
-                navigate("/");
-              }}
-              className="w-full bg-teal text-white font-semibold py-3 rounded-xl hover:bg-teal-dark transition-colors"
+              onClick={handlePost}
+              disabled={posting}
+              className="w-full bg-teal text-white font-semibold py-3 rounded-xl hover:bg-teal-dark transition-colors disabled:opacity-50"
             >
-              Post Listing
+              {posting ? "Posting..." : "Post Listing"}
             </button>
           </div>
         )}

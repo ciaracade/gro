@@ -42,6 +42,7 @@ alter table public.listings enable row level security;
 create policy "anyone can read available listings" on public.listings for select using (true);
 create policy "users can insert own listings" on public.listings for insert with check (auth.uid() = poster_id);
 create policy "users can update own listings" on public.listings for update using (auth.uid() = poster_id);
+create policy "users can delete own listings" on public.listings for delete using (auth.uid() = poster_id);
 
 -- pickup requests
 create table public.pickup_requests (
@@ -112,3 +113,36 @@ $$ language plpgsql security definer;
 create trigger on_swap_completed
   after insert on public.swaps
   for each row execute function update_points_on_swap();
+
+-- wbrs: update reputation scores after swap
+create or replace function update_reputation_on_swap()
+returns trigger as $$
+begin
+  -- update picker reputation
+  insert into public.reputation_scores (user_id, total_swaps, successful_swaps, trust_score)
+  values (new.picker_id, 1, 1, 1.0)
+  on conflict (user_id) do update set
+    total_swaps = reputation_scores.total_swaps + 1,
+    successful_swaps = reputation_scores.successful_swaps + 1,
+    trust_score = (reputation_scores.successful_swaps + 1)::numeric / (reputation_scores.total_swaps + 1)::numeric,
+    updated_at = now();
+
+  -- update poster reputation
+  insert into public.reputation_scores (user_id, total_swaps, successful_swaps, trust_score)
+  values (new.poster_id, 1, 1, 1.0)
+  on conflict (user_id) do update set
+    total_swaps = reputation_scores.total_swaps + 1,
+    successful_swaps = reputation_scores.successful_swaps + 1,
+    trust_score = (reputation_scores.successful_swaps + 1)::numeric / (reputation_scores.total_swaps + 1)::numeric,
+    updated_at = now();
+
+  return new;
+end;
+$$ language plpgsql security definer;
+
+create trigger on_swap_update_reputation
+  after insert on public.swaps
+  for each row execute function update_reputation_on_swap();
+
+-- unique constraint for reputation upsert
+alter table public.reputation_scores add constraint reputation_user_unique unique (user_id);

@@ -54,7 +54,7 @@ export default function Splash() {
       {/* cta */}
       <div className="px-6 pb-12">
         <button
-          onClick={() => navigate("/home")}
+          onClick={() => navigate("/login")}
           className="w-full bg-teal text-white font-semibold py-4 rounded-2xl text-lg hover:bg-teal-dark transition-colors shadow-lg shadow-teal/30"
         >
           Get Started
