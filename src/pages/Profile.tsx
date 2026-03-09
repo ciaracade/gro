@@ -45,45 +45,45 @@ export default function Profile() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* teal header with avatar */}
-      <header className="bg-teal px-5 pt-12 pb-10 flex flex-col items-center rounded-b-[2rem]">
-        <div className="w-22 h-22 rounded-full bg-white/20 border-4 border-white/50 flex items-center justify-center text-4xl mb-3 backdrop-blur-sm">
+    <div className="flex flex-col min-h-full bg-teal">
+      {/* teal header with avatar and stats */}
+      <header className="px-5 pt-14 pb-6 flex flex-col items-center shrink-0">
+        <div className="w-24 h-24 rounded-full bg-white/20 border-4 border-white/40 flex items-center justify-center text-4xl mb-2">
           👤
         </div>
+        <p className="text-white/70 text-xs mb-1">Tap to change photo</p>
         <h2 className="text-white font-bold text-xl">
           {profile?.name || "User"}
         </h2>
-      </header>
 
-      {/* stats row */}
-      <div className="px-5 -mt-5">
-        <div className="bg-white rounded-2xl shadow-lg shadow-black/5 p-5 flex justify-around">
+        {/* stats row - inside header */}
+        <div className="flex justify-around w-full mt-5">
           <div className="text-center">
-            <p className="text-xl font-bold text-gray-900">
+            <p className="text-2xl font-bold text-white">
               {profile?.points ?? 0}
             </p>
-            <p className="text-xs text-gray-500">Points</p>
+            <p className="text-xs text-white/70">Points</p>
           </div>
           <div className="text-center">
-            <p className="text-xl font-bold text-gray-900">
+            <p className="text-2xl font-bold text-white">
               {profile?.pickups ?? 0}
             </p>
-            <p className="text-xs text-gray-500">Pickups</p>
+            <p className="text-xs text-white/70">Pickups</p>
           </div>
           <div className="text-center">
-            <p className="text-xl font-bold text-gray-900">
+            <p className="text-2xl font-bold text-white">
               {profile?.lbs_saved ?? 0}
             </p>
-            <p className="text-xs text-gray-500">lbs saved</p>
+            <p className="text-xs text-white/70">lbs saved</p>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* trust score */}
-      {trustScore !== null && (
-        <div className="px-4 mt-4">
-          <div className="bg-white rounded-2xl shadow-sm p-4">
+      {/* white content area */}
+      <div className="flex-1 bg-cream rounded-t-4xl px-5 pt-6 pb-6 space-y-4">
+        {/* trust score */}
+        {trustScore !== null && (
+          <div className="bg-white rounded-2xl shadow-sm shadow-black/5 p-4">
             <h3 className="font-semibold text-gray-900 mb-2">Trust Score</h3>
             <div className="flex items-center gap-3">
               <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -100,51 +100,39 @@ export default function Profile() {
               Based on your swap history (WBRS)
             </p>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* personal info */}
-      <div className="px-4 mt-4 pb-4 space-y-4">
-        <div className="bg-white rounded-2xl shadow-sm p-4 space-y-4">
-          <h3 className="font-semibold text-gray-900">
-            👤 Personal Information
-          </h3>
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">Phone</label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">Zip Code</label>
-            <input
-              type="text"
-              value={zipCode}
-              onChange={(e) => setZipCode(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal"
-            />
-          </div>
+        {/* personal info */}
+        <div className="bg-white rounded-2xl shadow-sm shadow-black/5 p-4 space-y-4">
+          <h3 className="font-semibold text-gray-900">Personal Information</h3>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Name"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-teal bg-gray-50/50"
+          />
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-teal bg-gray-50/50"
+          />
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="Phone"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-teal bg-gray-50/50"
+          />
+          <input
+            type="text"
+            value={zipCode}
+            onChange={(e) => setZipCode(e.target.value)}
+            placeholder="Zip Code"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-teal bg-gray-50/50"
+          />
 
           <button
             onClick={handleSave}
@@ -156,18 +144,23 @@ export default function Profile() {
         </div>
 
         {/* accessibility settings */}
-        <div className="bg-white rounded-2xl shadow-sm p-4 space-y-4">
+        <div className="bg-white rounded-2xl shadow-sm shadow-black/5 p-4 space-y-3">
           <h3 className="font-semibold text-gray-900">
-            ⚙️ Accessibility Settings
+            Accessibility Settings
           </h3>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-700">High Contrast Mode</span>
+            <div>
+              <span className="text-sm text-gray-700">High Contrast Mode</span>
+              <p className="text-xs text-gray-400">
+                Increase color contrast for better visibility
+              </p>
+            </div>
             <button
               onClick={() => {
                 setHighContrast(!highContrast);
                 updateProfile({ high_contrast: !highContrast });
               }}
-              className={`w-12 h-7 rounded-full transition-colors relative ${
+              className={`w-12 h-7 rounded-full transition-colors relative shrink-0 ${
                 highContrast ? "bg-teal" : "bg-gray-300"
               }`}
             >

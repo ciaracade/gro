@@ -7,6 +7,7 @@ import {
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
+import { mockUser } from "../lib/mockData";
 import type { UserProfile } from "../types";
 
 interface AuthState {
@@ -18,9 +19,10 @@ interface AuthState {
 }
 
 interface AuthContextValue extends AuthState {
-  signInWithOtp: (phone: string) => Promise<{ error: Error | null }>;
+  signInAsFiller: () => void;
+  signInWithOtp: (email: string) => Promise<{ error: Error | null }>;
   verifyOtp: (
-    phone: string,
+    email: string,
     token: string,
   ) => Promise<{ error: Error | null; isNew: boolean }>;
   signOut: () => Promise<void>;
@@ -105,16 +107,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  async function signInWithOtp(phone: string) {
-    const { error } = await supabase.auth.signInWithOtp({ phone });
+  function signInAsFiller() {
+    const fakeUser = {
+      id: mockUser.id,
+      email: mockUser.email,
+      app_metadata: {},
+      user_metadata: {},
+      aud: "authenticated",
+      created_at: new Date().toISOString(),
+    } as User;
+    const fakeSession = {
+      user: fakeUser,
+      access_token: "fake",
+      refresh_token: "fake",
+      expires_at: Math.floor(Date.now() / 1000) + 3600,
+      expires_in: 3600,
+      token_type: "bearer",
+    } as Session;
+    setState({
+      session: fakeSession,
+      user: fakeUser,
+      profile: mockUser,
+      loading: false,
+      isNewUser: false,
+    });
+  }
+
+  async function signInWithOtp(email: string) {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/login`,
+      },
+    });
     return { error: error as Error | null };
   }
 
-  async function verifyOtp(phone: string, token: string) {
+  async function verifyOtp(email: string, token: string) {
     const { data, error } = await supabase.auth.verifyOtp({
-      phone,
+      email,
       token,
-      type: "sms",
+      type: "email",
     });
 
     if (error) return { error: error as Error, isNew: false };
@@ -164,6 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         ...state,
+        signInAsFiller,
         signInWithOtp,
         verifyOtp,
         signOut,

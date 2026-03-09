@@ -1,24 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { signInWithOtp, verifyOtp } = useAuth();
+  const { signInWithOtp, signInAsFiller } = useAuth();
 
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [step, setStep] = useState<"phone" | "otp">("phone");
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSendOtp() {
+  // Handle Supabase redirect errors (e.g. expired magic link)
+  useEffect(() => {
+    const hash = window.location.hash?.slice(1);
+    if (!hash) return;
+
+    const params = new URLSearchParams(hash);
+    const err = params.get("error");
+    const errCode = params.get("error_code");
+    const errDesc = params.get("error_description");
+
+    if (err || errCode || errDesc) {
+      const msg =
+        errCode === "otp_expired"
+          ? "That sign-in link has expired. Please request a new one."
+          : errDesc?.replace(/\+/g, " ") || err || "Sign-in failed. Please try again.";
+      setError(msg);
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+  }, []);
+
+  async function handleSendLink() {
     setError("");
     setLoading(true);
 
-    let normalized = phone.replace(/\D/g, "");
-    if (normalized.length === 10) normalized = "1" + normalized;
-    if (!normalized.startsWith("+")) normalized = "+" + normalized;
+    const normalized = email.trim().toLowerCase();
 
     const { error } = await signInWithOtp(normalized);
     setLoading(false);
@@ -28,29 +45,14 @@ export default function Login() {
       return;
     }
 
-    setPhone(normalized);
-    setStep("otp");
-  }
-
-  async function handleVerifyOtp() {
-    setError("");
-    setLoading(true);
-
-    const { error, isNew } = await verifyOtp(phone, otp);
-    setLoading(false);
-
-    if (error) {
-      setError(error.message);
-      return;
-    }
-
-    navigate(isNew ? "/onboarding" : "/home");
+    setEmail(normalized);
+    setSent(true);
   }
 
   return (
-    <div className="min-h-screen bg-cream flex flex-col">
-      {/* teal header */}
-      <div className="bg-teal px-6 pt-16 pb-14 text-center rounded-b-[2rem]">
+    <div className="min-h-screen bg-teal flex flex-col items-center justify-center px-6 pb-24">
+      {/* logo */}
+      <div className="text-center mb-8">
         <h1 className="font-fredoka text-5xl font-bold text-white drop-shadow-sm">
           gro!
         </h1>
@@ -60,106 +62,89 @@ export default function Login() {
       </div>
 
       {/* form card */}
-      <div className="flex-1 px-5 -mt-6">
-        <div className="bg-white rounded-2xl shadow-lg p-6">
-          {step === "phone" ? (
-            <div className="space-y-5">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Welcome back
-                </h2>
-                <p className="text-sm text-gray-500 mt-2 leading-relaxed">
-                  Enter your phone number to get started.
-                  <br />
-                  We'll send you a verification code.
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-600 mb-2">
-                  Phone number
-                </label>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="(734) 555-0123"
-                  className="w-full border border-gray-200 rounded-2xl px-5 py-4 text-lg bg-cream/50 focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 transition-all"
-                  autoFocus
-                />
-              </div>
-
-              {error && (
-                <p className="text-sm text-red-500 text-center bg-red-50 rounded-xl py-2">
-                  {error}
-                </p>
-              )}
-
-              <button
-                onClick={handleSendOtp}
-                disabled={loading || phone.replace(/\D/g, "").length < 10}
-                className="w-full bg-teal text-white font-semibold py-4 rounded-2xl hover:bg-teal-dark transition-all disabled:opacity-40 shadow-md shadow-teal/20 active:scale-[0.98]"
-              >
-                {loading ? "Sending..." : "Send Verification Code"}
-              </button>
+      <div className="bg-white rounded-2xl shadow-xl shadow-black/20 py-10 px-8 w-full max-w-sm">
+        {!sent ? (
+          <div className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-900">Welcome back</h2>
+              <p className="text-sm text-gray-500 mt-3 leading-relaxed">
+                Enter your email to get started.
+                <br />
+                We'll send you a sign-in link.
+              </p>
             </div>
-          ) : (
-            <div className="space-y-5">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Enter your code
-                </h2>
-                <p className="text-sm text-gray-500 mt-2">
-                  We sent a 6-digit code to
-                  <br />
-                  <span className="font-medium text-gray-700">{phone}</span>
-                </p>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-600 mb-2">
-                  Verification code
-                </label>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={otp}
-                  onChange={(e) =>
-                    setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
-                  }
-                  placeholder="000000"
-                  className="w-full border border-gray-200 rounded-2xl px-5 py-4 text-2xl text-center tracking-[0.5em] font-mono bg-cream/50 focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 transition-all"
-                  autoFocus
-                />
-              </div>
-
-              {error && (
-                <p className="text-sm text-red-500 text-center bg-red-50 rounded-xl py-2">
-                  {error}
-                </p>
-              )}
-
-              <button
-                onClick={handleVerifyOtp}
-                disabled={loading || otp.length !== 6}
-                className="w-full bg-teal text-white font-semibold py-4 rounded-2xl hover:bg-teal-dark transition-all disabled:opacity-40 shadow-md shadow-teal/20 active:scale-[0.98]"
-              >
-                {loading ? "Verifying..." : "Verify"}
-              </button>
-
-              <button
-                onClick={() => {
-                  setStep("phone");
-                  setOtp("");
-                  setError("");
-                }}
-                className="w-full text-teal font-medium text-sm py-2 hover:text-teal-dark transition-colors"
-              >
-                Use a different number
-              </button>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-2.5">
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full border border-gray-300 rounded-xl px-4 py-4 text-base bg-gray-50 focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 transition-all"
+                autoFocus
+              />
             </div>
-          )}
-        </div>
+
+            {error && (
+              <p className="text-sm text-red-500 text-center bg-red-50 rounded-xl py-2.5">
+                {error}
+              </p>
+            )}
+
+            <button
+              onClick={handleSendLink}
+              disabled={loading || !email.includes("@")}
+              className="w-full bg-teal text-white font-semibold py-4 rounded-xl hover:bg-teal-dark transition-all disabled:opacity-40 shadow-md shadow-teal/20 active:scale-[0.98]"
+            >
+              {loading ? "Sending..." : "Send Sign-In Link"}
+            </button>
+
+            <button
+              onClick={() => {
+                signInAsFiller();
+                navigate("/home");
+              }}
+              className="w-full text-gray-500 text-sm py-2 hover:text-gray-700 transition-colors"
+            >
+              Continue as demo user
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-6 text-center">
+            <div className="text-5xl">📬</div>
+            <h2 className="text-2xl font-bold text-gray-900">Check your email</h2>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              We sent a sign-in link to
+              <br />
+              <span className="font-medium text-gray-700">{email}</span>
+              <br />
+              Click the link in your email to log in.
+            </p>
+
+            <button
+              onClick={() => {
+                setSent(false);
+                setError("");
+              }}
+              className="w-full text-teal font-medium text-sm py-3 hover:text-teal-dark transition-colors"
+            >
+              Use a different email
+            </button>
+
+            <button
+              onClick={() => {
+                signInAsFiller();
+                navigate("/home");
+              }}
+              className="w-full text-gray-500 text-sm py-2 hover:text-gray-700 transition-colors"
+            >
+              Continue as demo user
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

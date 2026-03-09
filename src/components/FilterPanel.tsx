@@ -63,9 +63,9 @@ export default function FilterPanel({
   }
 
   return (
-    <div className="absolute inset-0 z-50 flex items-end">
+    <div className="fixed inset-0 z-50 flex items-end justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full bg-white rounded-t-3xl p-6 space-y-6 max-h-[85vh] overflow-y-auto">
+      <div className="relative w-full max-w-[430px] bg-white rounded-t-3xl p-6 space-y-6 max-h-[85vh] overflow-y-auto">
         <h2 className="text-xl font-bold text-gray-900">Filter Listings</h2>
 
         {/* distance */}
@@ -84,7 +84,7 @@ export default function FilterPanel({
                 distance: Number(e.target.value),
               }))
             }
-            className="w-full accent-blue-500"
+            className="w-full"
           />
           <p className="text-sm text-gray-500">Within {local.distance} miles</p>
         </div>

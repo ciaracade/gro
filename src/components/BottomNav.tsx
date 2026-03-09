@@ -12,7 +12,7 @@ export default function BottomNav() {
   const navigate = useNavigate();
 
   return (
-    <nav className="sticky bottom-0 bg-white border-t border-gray-100 z-50 safe-bottom">
+    <nav className="bg-white border-t border-gray-100 safe-bottom shrink-0">
       <div className="flex justify-around items-center h-16 px-2">
         {tabs.map((tab) => {
           const isActive = location.pathname.startsWith(tab.path);

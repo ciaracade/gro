@@ -48,10 +48,10 @@ export default function Home() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col bg-teal min-h-full">
       {/* teal header */}
-      <header className="bg-teal px-5 pt-12 pb-8 relative rounded-b-[2rem]">
-        <div className="absolute top-12 right-5">
+      <header className="px-5 pt-14 pb-10 relative shrink-0">
+        <div className="absolute top-14 right-5">
           <span className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm text-white px-4 py-1.5 rounded-full text-sm font-semibold">
             ⭐ {profile?.points ?? 0} pts
           </span>
@@ -68,47 +68,46 @@ export default function Home() {
       </header>
 
       {/* content */}
-      <div className="flex-1 px-4 py-4">
-        <div className="bg-white rounded-2xl shadow-lg shadow-black/5 p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-gray-800">
-                📍 Nearby Food Available
+      <div className="flex-1 bg-cream rounded-t-4xl px-4 pt-5 pb-6">
+        {/* section header */}
+        <div className="flex items-center justify-between mb-4 px-1">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-gray-800">
+              📍 Nearby Food Available
+            </span>
+            {hasUrgent && (
+              <span className="bg-salmon text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                Urgent
               </span>
-              {hasUrgent && (
-                <span className="bg-salmon text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                  Urgent
-                </span>
-              )}
-            </div>
-            <button
-              onClick={() => setShowFilters(true)}
-              className="text-sm text-teal font-medium"
-            >
-              🔍 Filter
-            </button>
+            )}
           </div>
-
-          {loading ? (
-            <div className="py-12 text-center text-gray-400 text-sm">
-              Loading listings...
-            </div>
-          ) : listings.length === 0 ? (
-            <div className="py-12 text-center text-gray-400 text-sm">
-              No food available nearby right now.
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {listings.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                  onPickup={() => setPickupListing(listing)}
-                />
-              ))}
-            </div>
-          )}
+          <button
+            onClick={() => setShowFilters(true)}
+            className="text-sm text-teal font-medium"
+          >
+            🔍 Filter
+          </button>
         </div>
+
+        {loading ? (
+          <div className="py-12 text-center text-gray-400 text-sm">
+            Loading listings...
+          </div>
+        ) : listings.length === 0 ? (
+          <div className="py-12 text-center text-gray-400 text-sm">
+            No food available nearby right now.
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {listings.map((listing) => (
+              <ListingCard
+                key={listing.id}
+                listing={listing}
+                onPickup={() => setPickupListing(listing)}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {showFilters && (

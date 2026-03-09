@@ -97,36 +97,37 @@ export default function Orders() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="bg-teal px-5 pt-12 pb-6 rounded-b-[2rem]">
+    <div className="flex flex-col min-h-full bg-teal">
+      <header className="px-5 pt-14 pb-6 shrink-0">
         <h1 className="text-center text-white font-bold text-xl">My Orders</h1>
       </header>
 
-      {/* tabs */}
-      <div className="flex bg-white mx-4 mt-4 rounded-xl overflow-hidden shadow-sm">
-        <button
-          onClick={() => setTab("pickups")}
-          className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
-            tab === "pickups"
-              ? "border-teal text-teal"
-              : "border-transparent text-gray-500"
-          }`}
-        >
-          My Pickups
-        </button>
-        <button
-          onClick={() => setTab("listings")}
-          className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
-            tab === "listings"
-              ? "border-teal text-teal"
-              : "border-transparent text-gray-500"
-          }`}
-        >
-          My Listings
-        </button>
-      </div>
+      {/* tabs + content in cream area */}
+      <div className="flex-1 bg-cream rounded-t-4xl px-4 pt-5 pb-6 flex flex-col">
+        <div className="flex bg-white rounded-xl overflow-hidden shadow-sm shadow-black/5 shrink-0">
+          <button
+            onClick={() => setTab("pickups")}
+            className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
+              tab === "pickups"
+                ? "border-teal text-teal"
+                : "border-transparent text-gray-500"
+            }`}
+          >
+            My Pickups
+          </button>
+          <button
+            onClick={() => setTab("listings")}
+            className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
+              tab === "listings"
+                ? "border-teal text-teal"
+                : "border-transparent text-gray-500"
+            }`}
+          >
+            My Listings
+          </button>
+        </div>
 
-      <div className="flex-1 p-4 space-y-3">
+        <div className="flex-1 pt-3 space-y-3">
         {loading ? (
           <div className="py-12 text-center text-gray-400 text-sm">
             Loading...
@@ -262,6 +263,7 @@ export default function Orders() {
             </div>
           ))
         )}
+        </div>
       </div>
     </div>
   );

@@ -99,9 +99,9 @@ export default function GiveFood() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-full bg-cream">
       {/* teal header */}
-      <header className="bg-teal px-5 pt-12 pb-5 rounded-b-[2rem]">
+      <header className="bg-teal px-5 pt-12 pb-5 rounded-b-4xl shrink-0">
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={back}

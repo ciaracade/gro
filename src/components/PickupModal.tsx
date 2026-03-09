@@ -47,9 +47,9 @@ export default function PickupModal({
   }
 
   return (
-    <div className="absolute inset-0 z-50 flex items-end">
+    <div className="fixed inset-0 z-50 flex items-end justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full bg-white rounded-t-3xl p-6 space-y-5">
+      <div className="relative w-full max-w-[430px] bg-white rounded-t-3xl p-6 space-y-5">
         <h2 className="text-lg font-bold text-gray-900">Schedule Pickup</h2>
 
         {/* listing summary */}
