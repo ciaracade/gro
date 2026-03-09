@@ -6,7 +6,7 @@ export default function Splash() {
   return (
     <div className="min-h-screen bg-cream flex flex-col">
       {/* illustration area */}
-      <div className="flex-1 flex flex-col items-center justify-center px-8 pt-16">
+      <div className="flex-1 flex flex-col items-center justify-center px-8 pt-12">
         {/* decorative illustration using emojis */}
         <div className="relative w-64 h-64 flex items-center justify-center">
           {/* background circle */}
@@ -55,7 +55,7 @@ export default function Splash() {
       <div className="px-6 pb-12">
         <button
           onClick={() => navigate("/login")}
-          className="w-full bg-teal text-white font-semibold py-4 rounded-2xl text-lg hover:bg-teal-dark transition-colors shadow-lg shadow-teal/30"
+          className="w-full bg-teal text-white font-semibold py-4 rounded-2xl text-lg hover:bg-teal-dark transition-all shadow-md shadow-teal/20 active:scale-[0.98]"
         >
           Get Started
         </button>

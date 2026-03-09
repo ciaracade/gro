@@ -59,9 +59,11 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen bg-cream flex flex-col">
       {/* header */}
-      <div className="bg-teal px-4 pt-10 pb-4">
+      <div className="bg-teal px-5 pt-12 pb-5 rounded-b-[2rem]">
         <div className="text-center mb-4">
-          <h1 className="font-fredoka text-3xl font-bold text-white">gro!</h1>
+          <h1 className="font-fredoka text-3xl font-bold text-white drop-shadow-sm">
+            gro!
+          </h1>
         </div>
 
         {/* progress bar */}

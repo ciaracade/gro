@@ -48,26 +48,28 @@ export default function Home() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen pb-20">
+    <div className="flex flex-col min-h-screen">
       {/* teal header */}
-      <header className="bg-teal px-4 pt-10 pb-6 relative">
-        <div className="absolute top-10 right-4">
-          <span className="inline-flex items-center gap-1 bg-teal-dark/50 text-white px-3 py-1 rounded-full text-sm font-semibold">
+      <header className="bg-teal px-5 pt-12 pb-8 relative rounded-b-[2rem]">
+        <div className="absolute top-12 right-5">
+          <span className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm text-white px-4 py-1.5 rounded-full text-sm font-semibold">
             ⭐ {profile?.points ?? 0} pts
           </span>
         </div>
 
         <div className="text-center">
-          <h1 className="font-fredoka text-4xl font-bold text-white">gro!</h1>
-          <p className="text-white/90 text-sm mt-1">
+          <h1 className="font-fredoka text-4xl font-bold text-white drop-shadow-sm">
+            gro!
+          </h1>
+          <p className="text-white/80 text-sm mt-2 tracking-wide">
             Share food. Reduce waste. Grow community.
           </p>
         </div>
       </header>
 
       {/* content */}
-      <div className="flex-1 px-4 -mt-2">
-        <div className="bg-white rounded-2xl shadow-sm p-4 space-y-4">
+      <div className="flex-1 px-4 py-4">
+        <div className="bg-white rounded-2xl shadow-lg shadow-black/5 p-5 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold text-gray-800">

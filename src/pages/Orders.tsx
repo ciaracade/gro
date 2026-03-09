@@ -97,15 +97,13 @@ export default function Orders() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen pb-20">
-      <header className="bg-teal px-4 pt-10 pb-6">
-        <h1 className="text-center text-white font-semibold text-lg">
-          My Orders
-        </h1>
+    <div className="flex flex-col min-h-screen">
+      <header className="bg-teal px-5 pt-12 pb-6 rounded-b-[2rem]">
+        <h1 className="text-center text-white font-bold text-xl">My Orders</h1>
       </header>
 
       {/* tabs */}
-      <div className="flex border-b border-gray-200 bg-white">
+      <div className="flex bg-white mx-4 mt-4 rounded-xl overflow-hidden shadow-sm">
         <button
           onClick={() => setTab("pickups")}
           className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${

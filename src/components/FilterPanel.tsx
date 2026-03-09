@@ -63,10 +63,10 @@ export default function FilterPanel({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end">
+    <div className="absolute inset-0 z-50 flex items-end">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full max-w-md mx-auto bg-white rounded-t-3xl p-6 space-y-6 max-h-[85vh] overflow-y-auto">
-        <h2 className="text-xl font-bold text-gray-900">🔍 Filter Listings</h2>
+      <div className="relative w-full bg-white rounded-t-3xl p-6 space-y-6 max-h-[85vh] overflow-y-auto">
+        <h2 className="text-xl font-bold text-gray-900">Filter Listings</h2>
 
         {/* distance */}
         <div className="space-y-2">

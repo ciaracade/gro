@@ -45,20 +45,20 @@ export default function Profile() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen pb-20">
+    <div className="flex flex-col min-h-screen">
       {/* teal header with avatar */}
-      <header className="bg-teal px-4 pt-10 pb-8 flex flex-col items-center">
-        <div className="w-20 h-20 rounded-full bg-white/20 border-3 border-white flex items-center justify-center text-3xl mb-3">
+      <header className="bg-teal px-5 pt-12 pb-10 flex flex-col items-center rounded-b-[2rem]">
+        <div className="w-22 h-22 rounded-full bg-white/20 border-4 border-white/50 flex items-center justify-center text-4xl mb-3 backdrop-blur-sm">
           👤
         </div>
-        <h2 className="text-white font-bold text-lg">
+        <h2 className="text-white font-bold text-xl">
           {profile?.name || "User"}
         </h2>
       </header>
 
       {/* stats row */}
-      <div className="px-4 -mt-4">
-        <div className="bg-white rounded-2xl shadow-sm p-4 flex justify-around">
+      <div className="px-5 -mt-5">
+        <div className="bg-white rounded-2xl shadow-lg shadow-black/5 p-5 flex justify-around">
           <div className="text-center">
             <p className="text-xl font-bold text-gray-900">
               {profile?.points ?? 0}
@@ -104,7 +104,7 @@ export default function Profile() {
       )}
 
       {/* personal info */}
-      <div className="px-4 mt-4 space-y-4">
+      <div className="px-4 mt-4 pb-4 space-y-4">
         <div className="bg-white rounded-2xl shadow-sm p-4 space-y-4">
           <h3 className="font-semibold text-gray-900">
             👤 Personal Information

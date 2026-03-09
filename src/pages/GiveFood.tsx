@@ -99,9 +99,9 @@ export default function GiveFood() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen pb-20">
+    <div className="flex flex-col min-h-screen">
       {/* teal header */}
-      <header className="bg-teal px-4 pt-10 pb-4">
+      <header className="bg-teal px-5 pt-12 pb-5 rounded-b-[2rem]">
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={back}
@@ -145,7 +145,7 @@ export default function GiveFood() {
       </header>
 
       {/* step content */}
-      <div className="flex-1 p-4">
+      <div className="flex-1 p-5">
         {currentStep === "What" && (
           <div className="space-y-4">
             <div>

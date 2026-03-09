@@ -27,7 +27,7 @@ export default function ListingCard({ listing, onPickup }: ListingCardProps) {
   const isUrgent = listing.minutes_remaining && listing.minutes_remaining <= 60;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-sm shadow-black/5 overflow-hidden">
       {/* food emoji display area */}
       <div className="relative bg-cream p-6 flex items-center justify-center gap-4">
         {emojis.map((emoji, i) => (

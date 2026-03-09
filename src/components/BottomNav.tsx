@@ -12,8 +12,8 @@ export default function BottomNav() {
   const navigate = useNavigate();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
-      <div className="max-w-md mx-auto flex justify-around items-center h-16">
+    <nav className="sticky bottom-0 bg-white border-t border-gray-100 z-50 safe-bottom">
+      <div className="flex justify-around items-center h-16 px-2">
         {tabs.map((tab) => {
           const isActive = location.pathname.startsWith(tab.path);
 
@@ -21,12 +21,20 @@ export default function BottomNav() {
             <button
               key={tab.path}
               onClick={() => navigate(tab.path)}
-              className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors ${
-                isActive ? "text-teal" : "text-gray-400"
+              className={`flex flex-col items-center justify-center gap-1 flex-1 h-full rounded-xl transition-all ${
+                isActive ? "text-teal" : "text-gray-400 active:scale-95"
               }`}
             >
-              <span className="text-xl">{tab.emoji}</span>
-              <span className="text-[10px] font-medium">{tab.label}</span>
+              <span
+                className={`text-xl transition-transform ${isActive ? "scale-110" : ""}`}
+              >
+                {tab.emoji}
+              </span>
+              <span
+                className={`text-[10px] font-semibold ${isActive ? "text-teal" : ""}`}
+              >
+                {tab.label}
+              </span>
             </button>
           );
         })}
