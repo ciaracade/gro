@@ -30,8 +30,8 @@ export default function Home() {
         filters.accessibility.length > 0 ? filters.accessibility : undefined,
     });
 
-    if (error || !data) {
-      // fall back to mock data if supabase isn't configured
+    if (error || !data || data.length === 0) {
+      // fall back to mock data if supabase has no listings yet
       setListings(mockListings);
     } else {
       setListings(data);

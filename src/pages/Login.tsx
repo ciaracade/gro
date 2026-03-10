@@ -25,9 +25,15 @@ export default function Login() {
       const msg =
         errCode === "otp_expired"
           ? "That sign-in link has expired. Please request a new one."
-          : errDesc?.replace(/\+/g, " ") || err || "Sign-in failed. Please try again.";
+          : errDesc?.replace(/\+/g, " ") ||
+            err ||
+            "Sign-in failed. Please try again.";
       setError(msg);
-      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search,
+      );
     }
   }, []);
 
@@ -115,7 +121,9 @@ export default function Login() {
         ) : (
           <div className="space-y-6 text-center">
             <div className="text-5xl">📬</div>
-            <h2 className="text-2xl font-bold text-gray-900">Check your email</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Check your email
+            </h2>
             <p className="text-sm text-gray-500 leading-relaxed">
               We sent a sign-in link to
               <br />

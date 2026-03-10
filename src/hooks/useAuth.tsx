@@ -107,7 +107,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  function signInAsFiller() {
+  async function signInAsFiller() {
+    // ensure mock user exists in public.users so FK constraints pass
+    await supabase.from("users").upsert({
+      id: mockUser.id,
+      name: mockUser.name,
+      email: mockUser.email,
+      phone: mockUser.phone,
+      zip_code: mockUser.zip_code,
+      points: mockUser.points,
+      pickups: mockUser.pickups,
+      lbs_saved: mockUser.lbs_saved,
+      high_contrast: mockUser.high_contrast,
+    });
+
     const fakeUser = {
       id: mockUser.id,
       email: mockUser.email,

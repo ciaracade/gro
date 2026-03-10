@@ -1,5 +1,11 @@
 import { useEffect } from "react";
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
 import AppShell from "./components/AppShell";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -21,7 +27,11 @@ function AuthHashRedirect() {
     if (!hash || location.pathname === "/login") return;
 
     const params = new URLSearchParams(hash);
-    if (params.has("error") || params.has("error_code") || params.has("error_description")) {
+    if (
+      params.has("error") ||
+      params.has("error_code") ||
+      params.has("error_description")
+    ) {
       navigate(`/login${window.location.hash}`, { replace: true });
     }
   }, [location.pathname, navigate]);

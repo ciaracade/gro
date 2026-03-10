@@ -128,141 +128,141 @@ export default function Orders() {
         </div>
 
         <div className="flex-1 pt-3 space-y-3">
-        {loading ? (
-          <div className="py-12 text-center text-gray-400 text-sm">
-            Loading...
-          </div>
-        ) : tab === "pickups" ? (
-          myPickups.length === 0 ? (
+          {loading ? (
             <div className="py-12 text-center text-gray-400 text-sm">
-              <p className="text-3xl mb-2">📦</p>
-              No pickups yet. Browse the feed to find food!
+              Loading...
+            </div>
+          ) : tab === "pickups" ? (
+            myPickups.length === 0 ? (
+              <div className="py-12 text-center text-gray-400 text-sm">
+                <p className="text-3xl mb-2">📦</p>
+                No pickups yet. Browse the feed to find food!
+              </div>
+            ) : (
+              myPickups.map((pickup) => (
+                <div
+                  key={pickup.id}
+                  className="bg-white rounded-2xl p-4 shadow-sm space-y-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">
+                      {pickup.listing?.food_type === "produce"
+                        ? "🥬"
+                        : pickup.listing?.food_type === "baked"
+                          ? "🥖"
+                          : pickup.listing?.food_type === "prepared"
+                            ? "🍕"
+                            : "🥫"}
+                    </span>
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-900 text-sm">
+                        {pickup.listing?.title || "Food Listing"}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Pickup: {new Date(pickup.pickup_time).toLocaleString()}
+                      </p>
+                    </div>
+                    {statusBadge(pickup.status)}
+                  </div>
+
+                  {pickup.listing?.location_name && (
+                    <p className="text-sm text-teal font-medium">
+                      📍 {pickup.listing.location_name}
+                    </p>
+                  )}
+
+                  {pickup.status === "confirmed" && (
+                    <button
+                      onClick={() => handleCompletePickup(pickup)}
+                      className="w-full bg-teal text-white font-semibold py-3 rounded-xl text-sm hover:bg-teal-dark transition-colors"
+                    >
+                      Confirm I Picked Up
+                    </button>
+                  )}
+                </div>
+              ))
+            )
+          ) : myListings.length === 0 ? (
+            <div className="py-12 text-center text-gray-400 text-sm">
+              <p className="text-3xl mb-2">🍽️</p>
+              No listings yet. Tap "Give Food" to share!
             </div>
           ) : (
-            myPickups.map((pickup) => (
+            myListings.map((listing) => (
               <div
-                key={pickup.id}
+                key={listing.id}
                 className="bg-white rounded-2xl p-4 shadow-sm space-y-3"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">
-                    {pickup.listing?.food_type === "produce"
+                    {listing.food_type === "produce"
                       ? "🥬"
-                      : pickup.listing?.food_type === "baked"
+                      : listing.food_type === "baked"
                         ? "🥖"
-                        : pickup.listing?.food_type === "prepared"
+                        : listing.food_type === "prepared"
                           ? "🍕"
                           : "🥫"}
                   </span>
                   <div className="flex-1">
                     <p className="font-semibold text-gray-900 text-sm">
-                      {pickup.listing?.title || "Food Listing"}
+                      {listing.title}
                     </p>
                     <p className="text-xs text-gray-500">
-                      Pickup: {new Date(pickup.pickup_time).toLocaleString()}
+                      📍 {listing.location_name}
                     </p>
                   </div>
-                  {statusBadge(pickup.status)}
+                  {statusBadge(listing.status)}
                 </div>
 
-                {pickup.listing?.location_name && (
-                  <p className="text-sm text-teal font-medium">
-                    📍 {pickup.listing.location_name}
-                  </p>
-                )}
+                {/* pending pickup requests */}
+                {listing.requests &&
+                  listing.requests.length > 0 &&
+                  listing.status === "available" && (
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold text-gray-600">
+                        Pickup Requests:
+                      </p>
+                      {listing.requests
+                        .filter((r) => r.status === "pending")
+                        .map((req) => (
+                          <div
+                            key={req.id}
+                            className="flex items-center justify-between p-2 bg-cream rounded-lg"
+                          >
+                            <div>
+                              <p className="text-sm font-medium text-gray-800">
+                                {(
+                                  req as unknown as {
+                                    requester?: { name?: string };
+                                  }
+                                ).requester?.name || "User"}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {new Date(req.pickup_time).toLocaleString()}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => handleConfirmRequest(req.id)}
+                              className="bg-teal text-white text-xs font-semibold px-3 py-1.5 rounded-lg"
+                            >
+                              Confirm
+                            </button>
+                          </div>
+                        ))}
+                    </div>
+                  )}
 
-                {pickup.status === "confirmed" && (
+                {listing.status === "available" && (
                   <button
-                    onClick={() => handleCompletePickup(pickup)}
-                    className="w-full bg-teal text-white font-semibold py-3 rounded-xl text-sm hover:bg-teal-dark transition-colors"
+                    onClick={() => handleCancelListing(listing.id)}
+                    className="w-full border border-gray-300 text-gray-600 font-medium py-2 rounded-xl text-sm"
                   >
-                    Confirm I Picked Up
+                    Cancel Listing
                   </button>
                 )}
               </div>
             ))
-          )
-        ) : myListings.length === 0 ? (
-          <div className="py-12 text-center text-gray-400 text-sm">
-            <p className="text-3xl mb-2">🍽️</p>
-            No listings yet. Tap "Give Food" to share!
-          </div>
-        ) : (
-          myListings.map((listing) => (
-            <div
-              key={listing.id}
-              className="bg-white rounded-2xl p-4 shadow-sm space-y-3"
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">
-                  {listing.food_type === "produce"
-                    ? "🥬"
-                    : listing.food_type === "baked"
-                      ? "🥖"
-                      : listing.food_type === "prepared"
-                        ? "🍕"
-                        : "🥫"}
-                </span>
-                <div className="flex-1">
-                  <p className="font-semibold text-gray-900 text-sm">
-                    {listing.title}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    📍 {listing.location_name}
-                  </p>
-                </div>
-                {statusBadge(listing.status)}
-              </div>
-
-              {/* pending pickup requests */}
-              {listing.requests &&
-                listing.requests.length > 0 &&
-                listing.status === "available" && (
-                  <div className="space-y-2">
-                    <p className="text-xs font-semibold text-gray-600">
-                      Pickup Requests:
-                    </p>
-                    {listing.requests
-                      .filter((r) => r.status === "pending")
-                      .map((req) => (
-                        <div
-                          key={req.id}
-                          className="flex items-center justify-between p-2 bg-cream rounded-lg"
-                        >
-                          <div>
-                            <p className="text-sm font-medium text-gray-800">
-                              {(
-                                req as unknown as {
-                                  requester?: { name?: string };
-                                }
-                              ).requester?.name || "User"}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {new Date(req.pickup_time).toLocaleString()}
-                            </p>
-                          </div>
-                          <button
-                            onClick={() => handleConfirmRequest(req.id)}
-                            className="bg-teal text-white text-xs font-semibold px-3 py-1.5 rounded-lg"
-                          >
-                            Confirm
-                          </button>
-                        </div>
-                      ))}
-                  </div>
-                )}
-
-              {listing.status === "available" && (
-                <button
-                  onClick={() => handleCancelListing(listing.id)}
-                  className="w-full border border-gray-300 text-gray-600 font-medium py-2 rounded-xl text-sm"
-                >
-                  Cancel Listing
-                </button>
-              )}
-            </div>
-          ))
-        )}
+          )}
         </div>
       </div>
     </div>
